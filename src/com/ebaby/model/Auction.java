@@ -13,8 +13,8 @@ public class Auction
 	private Date endTime ;
 	private AuctionStatus auctionStatus;
 	private Bid highBid;
-	private Integer finalSellerPrice;
-	private Integer finalBuyerPrice;
+	private Double finalSellerPrice;
+	private Double finalBuyerPrice;
 	private long auctionId;
 	private ItemCategory itemCategory;
 	
@@ -127,22 +127,22 @@ public class Auction
 		return itemCategory;
 	}
 	
-	public Integer getFinalSellerPrice()
+	public Double getFinalSellerPrice()
 	{
 		return finalSellerPrice;
 	}
 	
-	public void setFinalSellerPrice(Integer finalSellerPrice)
+	public void setFinalSellerPrice(Double finalSellerPrice)
 	{
 		this.finalSellerPrice = finalSellerPrice;
 	}
 	
-	public Integer getFinalBuyerPrice()
+	public Double getFinalBuyerPrice()
 	{
 		return finalBuyerPrice;
 	}
 	
-	public void setFinalBuyerPrice(Integer finalBuyerPrice)
+	public void setFinalBuyerPrice(Double finalBuyerPrice)
 	{
 		this.finalBuyerPrice = finalBuyerPrice;
 	}
@@ -180,6 +180,12 @@ public class Auction
 		if (this.getAuctionStatus() == AuctionStatus.STARTED)
 		{
 			this.setAuctionStatus(AuctionStatus.FINISHED);
+			//Somehow create a chain of fee processors.
+			FeeProcessorFactory feeProcessorFactory = FeeProcessorFactory.getInstance(this);
+			//Start the chain of fee processors... HOW?
+			feeProcessorFactory.closeAuction();
+			
+			
 			Notification notification = Notification.getInstance(this);
 			notification.sendNotifications();
 		}

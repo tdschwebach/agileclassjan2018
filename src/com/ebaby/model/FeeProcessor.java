@@ -8,11 +8,15 @@ public abstract class FeeProcessor
 	}
 	
 	public Auction closeAuction(Auction auction) {
+		if (feeApplicable(auction)) {
+			computeFee(auction);
+		}
+		if (tail != null) {
+			return tail.closeAuction(auction);
+		}
 		return auction;
 	}
 	
-	protected abstract Double computeFee(Integer bidAmount);
-	//protected abstract Double addShippingFee(Integer bidAmount);
-	//protected abstract Double addLuxuryTax(Integer bidAmount);
-	//protected abstract Double addCarShippingFee(Integer bidAmount);
+	protected abstract boolean feeApplicable(Auction auction);
+	protected abstract void computeFee(Auction auction);
 }
