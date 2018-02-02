@@ -181,9 +181,10 @@ public class Auction
 		{
 			this.setAuctionStatus(AuctionStatus.FINISHED);
 			//Somehow create a chain of fee processors.
-			FeeProcessorFactory feeProcessorFactory = FeeProcessorFactory.getInstance(this);
+			FeeProcessor feeProcessorFactory = FeeProcessorFactory.getInstance(this);
 			//Start the chain of fee processors... HOW?
-			feeProcessorFactory.closeAuction();
+			//This seems to work, too. -WV
+			feeProcessorFactory.closeAuction(this);
 			
 			
 			Notification notification = Notification.getInstance(this);

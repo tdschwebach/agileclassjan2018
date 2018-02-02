@@ -20,9 +20,9 @@ public class ShippingFeeProcessor extends FeeProcessor
 	@Override protected void computeFee(Auction auction)
 	{
 		if (auction.getItemCategory() == ItemCategory.CAR) {
-			auction.setFinalBuyerPrice(auction.getStartPrice() + 1000);
+			auction.setFinalBuyerPrice(auction.getStartPrice() + 1000.0);
 		} else if (auction.getItemCategory() == ItemCategory.OTHER) {
-			auction.setFinalBuyerPrice(auction.getStartPrice() + 10);
+			auction.setFinalBuyerPrice(auction.getStartPrice() + 10.0);
 		}
 	}
 
