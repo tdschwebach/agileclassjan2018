@@ -1,10 +1,13 @@
 package com.ebaby.model;
 
+import com.tobeagile.training.ebaby.services.Auctionable;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-public class Auctions
+public class Auctions implements Auctionable
 {
 	private static Auctions auctions;
 	private static List<Auction> auctionList;
@@ -33,6 +36,19 @@ public class Auctions
 			return auction.get();
 		} else {
 			return null;
+		}
+	}
+	
+	@Override public void handleAuctionEvents(long now)
+	{
+		for (Auction auction : auctionList) {
+			if (auction.getAuctionStatus() == AuctionStatus.SCHEDULED &&
+					auction.getStartTime().after(new Date(now))) {
+				auction.onStart();
+			} else if (auction.getAuctionStatus() == AuctionStatus.STARTED &&
+					auction.getEndTime().before(new Date(now))) {
+				auction.onClose();
+			}
 		}
 	}
 }

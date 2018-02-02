@@ -304,7 +304,7 @@ public class AuctionTests
 		catch (InvalidAuctionException iae) {
 			fail("Invalid Auction Exception was not expected");
 		}
-		auction.close();
+		auction.onClose();
 		assertEquals(AuctionStatus.FINISHED, auction.getAuctionStatus());
 	}
 	
@@ -322,7 +322,7 @@ public class AuctionTests
 		catch (InvalidAuctionException iae) {
 			fail("Invalid Auction Exception was not expected");
 		}
-		auction.close();
+		auction.onClose();
 		assertEquals(AuctionStatus.SCHEDULED, auction.getAuctionStatus());
 	}
 	
@@ -340,7 +340,7 @@ public class AuctionTests
 		catch (InvalidAuctionException iae) {
 			fail("Invalid Auction Exception was not expected");
 		}
-		auction.start();
+		auction.onStart();
 		assertEquals(AuctionStatus.STARTED, auction.getAuctionStatus());
 	}
 	
@@ -354,13 +354,13 @@ public class AuctionTests
 		try
 		{
 			auction = new Auction(user, itemDescription, startPrice, startTime, endTime, ItemCategory.OTHER);
-			auction.start();
-			auction.close();
+			auction.onStart();
+			auction.onClose();
 		}
 		catch (InvalidAuctionException iae) {
 			fail("Invalid Auction Exception was not expected");
 		}
-		auction.start();
+		auction.onStart();
 		assertEquals(AuctionStatus.FINISHED, auction.getAuctionStatus());
 	}
 	
@@ -374,12 +374,12 @@ public class AuctionTests
 		try
 		{
 			auction = new Auction(user, itemDescription, startPrice, startTime, endTime, ItemCategory.OTHER);
-			auction.start();
+			auction.onStart();
 		}
 		catch (InvalidAuctionException iae) {
 			fail("Invalid Auction Exception was not expected");
 		}
-		auction.close();
+		auction.onClose();
 		assertEquals(AuctionStatus.FINISHED, auction.getAuctionStatus());
 		
 		assertTrue(postOffice.doesLogContain(user.getEmail(), "Sorry, your auction for " + itemDescription +
@@ -414,7 +414,7 @@ public class AuctionTests
 			fail("Invalid Bid Exception was not expected");
 		}
 		
-		auction.close();
+		auction.onClose();
 
 		assertNotNull(auction.getHighBid());
 		assertEquals(auction.getHighBid().getBidder().getUserName(), validBid.getBidder().getUserName());
@@ -425,7 +425,7 @@ public class AuctionTests
 		assertTrue(postOffice.doesLogContain(user.getEmail(), "Your " + itemDescription +
 				" auction sold to bidder " + auction.getHighBid().getBidder().getEmail() + " for "
 				+  auction.getFinalSellerPrice() + "."));
-		//assertTrue(auctionLogger.findMessage("./log.txt", "An item was sold for " + buyerAmount));
+		assertTrue(auctionLogger.findMessage(Constants.LARGE_SALE_LOG, "An item was sold for " + auction.getFinalBuyerPrice()));
 		
 	}
 	
@@ -457,17 +457,17 @@ public class AuctionTests
 			fail("Invalid Bid Exception was not expected");
 		}
 		
-		auction.close();
+		auction.onClose();
 
 		assertNotNull(auction.getHighBid());
 		assertEquals(auction.getHighBid().getBidder().getUserName(), validBid.getBidder().getUserName());
 		assertEquals(auction.getHighBid().getBidAmount(), validBid.getBidAmount());
 		
-		/*assertTrue(postOffice.doesLogContain(bidder.getEmail(), "Congratulations! You won an auction for "
-				+ itemDescription + " from " + user.getEmail() + " for " +  buyerAmount + "."));
+		assertTrue(postOffice.doesLogContain(bidder.getEmail(), "Congratulations! You won an auction for "
+				+ itemDescription + " from " + user.getEmail() + " for " +  auction.getFinalBuyerPrice() + "."));
 		assertTrue(postOffice.doesLogContain(user.getEmail(), "Your " + itemDescription +
 				" auction sold to bidder " + auction.getHighBid().getBidder().getEmail() + " for "
-				+  sellerAmount + "."));*/
+				+  auction.getFinalSellerPrice() + "."));
 	}
 	
 	@Test
@@ -498,7 +498,7 @@ public class AuctionTests
 			fail("Invalid Bid Exception was not expected");
 		}
 		
-		auction.close();
+		auction.onClose();
 
 		assertNotNull(auction.getHighBid());
 		assertEquals(auction.getHighBid().getBidder().getUserName(), validBid.getBidder().getUserName());
@@ -509,7 +509,7 @@ public class AuctionTests
 		assertTrue(postOffice.doesLogContain(user.getEmail(), "Your " + itemDescription +
 				" auction sold to bidder " + auction.getHighBid().getBidder().getEmail() + " for "
 				+  auction.getFinalSellerPrice() + "."));
-		//assertTrue(auctionLogger.findMessage("./log.txt", "A car was sold for " + buyerAmount));
+		assertTrue(auctionLogger.findMessage(Constants.CAR_LOG_LOG, "A car was sold for " + auction.getHighBid().getBidAmount()));
 	}
 	
 	@Test
@@ -540,17 +540,16 @@ public class AuctionTests
 			fail("Invalid Bid Exception was not expected");
 		}
 		
-		auction.close();
+		auction.onClose();
 
 		assertNotNull(auction.getHighBid());
 		assertEquals(auction.getHighBid().getBidder().getUserName(), validBid.getBidder().getUserName());
 		assertEquals(auction.getHighBid().getBidAmount(), validBid.getBidAmount());
 		
-		/*assertTrue(postOffice.doesLogContain(bidder.getEmail(), "Congratulations! You won an auction for "
-				+ itemDescription + " from " + user.getEmail() + " for " +  buyerAmount + "."));
+		assertTrue(postOffice.doesLogContain(bidder.getEmail(), "Congratulations! You won an auction for "
+				+ itemDescription + " from " + user.getEmail() + " for " +  auction.getFinalBuyerPrice() + "."));
 		assertTrue(postOffice.doesLogContain(user.getEmail(), "Your " + itemDescription +
 				" auction sold to bidder " + auction.getHighBid().getBidder().getEmail() + " for "
-				+  sellerAmount + "."));*/
+				+  auction.getFinalSellerPrice() + "."));
 	}
-	
 }

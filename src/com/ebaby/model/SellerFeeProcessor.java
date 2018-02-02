@@ -1,19 +1,19 @@
 package com.ebaby.model;
 
-public class SellerFeeProcessor extends FeeProcessor
+public class SellerFeeProcessor extends CloseProcessor
 {
 	
-	public SellerFeeProcessor(FeeProcessor next)
+	public SellerFeeProcessor(CloseProcessor next)
 	{
 		super(next);
 	}
 	
-	@Override protected boolean feeApplicable(Auction auction)
+	@Override protected boolean processorApplicable(Auction auction)
 	{
 		return true;
 	}
 	
-	@Override protected void computeFee(Auction auction)
+	@Override protected void applyProcessor(Auction auction)
 	{
 		auction.setFinalSellerPrice(auction.getStartPrice() * 0.02);
 	}

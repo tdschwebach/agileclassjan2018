@@ -1,13 +1,13 @@
 package com.ebaby.model;
 
-public class ShippingFeeProcessor extends FeeProcessor
+public class ShippingFeeProcessor extends CloseProcessor
 {
-	public ShippingFeeProcessor(FeeProcessor next)
+	public ShippingFeeProcessor(CloseProcessor next)
 	{
 		super(next);
 	}
 	
-	@Override protected boolean feeApplicable(Auction auction)
+	@Override protected boolean processorApplicable(Auction auction)
 	{
 		if (auction.getItemCategory() == ItemCategory.DOWNLOADABLE_SOFTWARE) {
 			return false;
@@ -17,7 +17,7 @@ public class ShippingFeeProcessor extends FeeProcessor
 		}
 	}
 	
-	@Override protected void computeFee(Auction auction)
+	@Override protected void applyProcessor(Auction auction)
 	{
 		if (auction.getItemCategory() == ItemCategory.CAR) {
 			auction.setFinalBuyerPrice(auction.getStartPrice() + 1000.0);

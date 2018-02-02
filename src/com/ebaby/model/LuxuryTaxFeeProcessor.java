@@ -1,14 +1,14 @@
 package com.ebaby.model;
 
-public class LuxuryTaxFeeProcessor extends FeeProcessor
+public class LuxuryTaxFeeProcessor extends CloseProcessor
 {
 	
-	public LuxuryTaxFeeProcessor(FeeProcessor next)
+	public LuxuryTaxFeeProcessor(CloseProcessor next)
 	{
 		super(next);
 	}
 	
-	@Override protected boolean feeApplicable(Auction auction)
+	@Override protected boolean processorApplicable(Auction auction)
 	{
 		if (auction.getItemCategory() == ItemCategory.CAR && auction.getHighBid().getBidAmount() > 50000) {
 			return true;
@@ -18,7 +18,7 @@ public class LuxuryTaxFeeProcessor extends FeeProcessor
 		}
 	}
 	
-	@Override protected void computeFee(Auction auction)
+	@Override protected void applyProcessor(Auction auction)
 	{
 		auction.setFinalBuyerPrice(auction.getHighBid().getBidAmount() * 0.04);
 	}

@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AuctionsTests
 {
@@ -29,8 +31,10 @@ public class AuctionsTests
 	private static final Integer startPrice = 100;
 	private static final String itemDescription2 = "ItemDesc2";
 	private static final Integer startPrice2 = 50;
-	private static final Date startTime = new Date(System.currentTimeMillis() + 3600);
-	private static final Date endTime = new Date(System.currentTimeMillis() + 7200);
+	private static final Date startTime1 = new Date(System.currentTimeMillis() + 3600);
+	private static final Date endTime1 = new Date(System.currentTimeMillis() + 7200);
+	private static final Date startTime2 = new Date(System.currentTimeMillis() + 10000);
+	private static final Date endTime2 = new Date(System.currentTimeMillis() + 17200);
 	
 	@BeforeEach
 	void init() throws InvalidAuctionException, InterruptedException {
@@ -38,9 +42,9 @@ public class AuctionsTests
 		seller = new User(firstName2, lastName2, email2, userName2, password2);
 		seller.setLoggedIn(true);
 		seller.setSeller(true);
-		auction1 = new Auction(seller, itemDescription, startPrice, startTime, endTime, ItemCategory.OTHER);
+		auction1 = new Auction(seller, itemDescription, startPrice, startTime1, endTime1, ItemCategory.OTHER);
 		Thread.sleep(1);
-		auction2 = new Auction(seller, itemDescription2, startPrice2, startTime, endTime, ItemCategory.OTHER);
+		auction2 = new Auction(seller, itemDescription2, startPrice2, startTime2, endTime2, ItemCategory.OTHER);
 	}
 	
 	@AfterEach
@@ -70,5 +74,44 @@ public class AuctionsTests
 		auctions.addAuction(auction1);
 		auctions.addAuction(auction2);
 		Assertions.assertEquals(auction2, auctions.getAuctionById(auction2.getAuctionId()));
+	}
+	
+	@Test
+	void testStartAuctionsShouldNotStartAuction() {
+		Auctions auctions = Auctions.getInstance();
+		auctions.addAuction(auction1);
+		auctions.addAuction(auction2);
+		
+		auctions.handleAuctionEvents(new Date(System.currentTimeMillis() + 20000).getTime());
+		
+		assertEquals(AuctionStatus.SCHEDULED, auctions.getAuctionById(auction1.getAuctionId()).getAuctionStatus());
+		assertEquals(AuctionStatus.SCHEDULED, auctions.getAuctionById(auction2.getAuctionId()).getAuctionStatus());
+		
+	}
+	
+	@Test
+	void testStartAuctionEventsShouldNotStartOneAuction() {
+		Auctions auctions = Auctions.getInstance();
+		auctions.addAuction(auction1);
+		auctions.addAuction(auction2);
+		
+		auctions.handleAuctionEvents(new Date(System.currentTimeMillis() + 7000).getTime());
+		
+		assertEquals(AuctionStatus.SCHEDULED, auctions.getAuctionById(auction1.getAuctionId()).getAuctionStatus());
+		assertEquals(AuctionStatus.STARTED, auctions.getAuctionById(auction2.getAuctionId()).getAuctionStatus());
+	}
+	
+	@Test
+	void testStartAuctionEventsShouldCloseAuctions() {
+		Auctions auctions = Auctions.getInstance();
+		auction1.setAuctionStatus(AuctionStatus.STARTED);
+		auction2.setAuctionStatus(AuctionStatus.STARTED);
+		auctions.addAuction(auction1);
+		auctions.addAuction(auction2);
+		
+		auctions.handleAuctionEvents(new Date(System.currentTimeMillis() + 80000000).getTime());
+		
+		assertEquals(AuctionStatus.FINISHED, auctions.getAuctionById(auction1.getAuctionId()).getAuctionStatus());
+		assertEquals(AuctionStatus.FINISHED, auctions.getAuctionById(auction2.getAuctionId()).getAuctionStatus());
 	}
 }

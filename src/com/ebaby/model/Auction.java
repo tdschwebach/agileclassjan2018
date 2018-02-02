@@ -1,7 +1,5 @@
 package com.ebaby.model;
 
-import com.tobeagile.training.ebaby.services.PostOffice;
-
 import java.util.Date;
 
 public class Auction
@@ -168,24 +166,22 @@ public class Auction
 		
 	}
 	
-	public void start() {
+	public void onStart() {
 		if (this.getAuctionStatus() == AuctionStatus.SCHEDULED)
 		{
 			this.setAuctionStatus(AuctionStatus.STARTED);
 		}
 	}
 	
-	public void close()
+	public void onClose()
 	{
 		if (this.getAuctionStatus() == AuctionStatus.STARTED)
 		{
 			this.setAuctionStatus(AuctionStatus.FINISHED);
 			//Somehow create a chain of fee processors.
-			FeeProcessor feeProcessorFactory = FeeProcessorFactory.getInstance(this);
-			//Start the chain of fee processors... HOW?
-			//This seems to work, too. -WV
-			feeProcessorFactory.closeAuction(this);
-			
+			CloseProcessor closeProcessorFactory = CloseProcessorFactory.getInstance(this);
+
+			closeProcessorFactory.closeAuction(this);
 			
 			Notification notification = Notification.getInstance(this);
 			notification.sendNotifications();

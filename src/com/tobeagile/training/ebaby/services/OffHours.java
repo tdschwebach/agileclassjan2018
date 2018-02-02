@@ -14,4 +14,8 @@ public final class OffHours implements Hours {
 			ret = Math.random()*10.0 >= 5.0 ? true : false;
 		return ret;
 	}
+	
+	public void setOffHours(boolean value) {
+		
+	}
 }
